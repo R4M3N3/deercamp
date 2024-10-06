@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Activity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://www.transparenttextures.com/patterns/camo.png'); /* Camouflage pattern */
+            background-color: #3b3c36; /* Dark green background */
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border-radius: 8px; /* Rounded corners */
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #888; /* Light gray border */
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4c4d48; /* Dark gray background */
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer; /* Pointer on hover */
+        }
+        button:hover {
+            background: #60605b; /* Slightly lighter on hover */
+        }
+        #log {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align: center;">Log Activity</h2>
+        <input type="text" id="logInput" placeholder="Log something..." required>
+        <button onclick="logActivity()">Log</button>
+        
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        const sharedLogsKey = 'sharedLogs'; // Key for storing logs in localStorage
+
+        // Load logs from local storage
+        function loadLogs() {
+            const userLogs = JSON.parse(localStorage.getItem(sharedLogsKey)) || [];
+            userLogs.forEach(log => {
+                const logEntry = document.createElement('p');
+                logEntry.textContent = log;
+                logDiv.appendChild(logEntry);
+            });
+        }
+
+        function logActivity() {
+            const logInput = document.getElementById('logInput').value;
+            if (logInput) {
+                const userLogs = JSON.parse(localStorage.getItem(sharedLogsKey)) || [];
+                userLogs.push(logInput); // Add new log
+                localStorage.setItem(sharedLogsKey, JSON.stringify(userLogs)); // Save logs
+                const logEntry = document.createElement('p');
+                logEntry.textContent = logInput;
+                logDiv.appendChild(logEntry);
+                document.getElementById('logInput').value = '';
+            } else {
+                alert('Please enter a log entry.');
+            }
+        }
+
+        // Load logs when the page is loaded
+        loadLogs();
+
+        // Optional: clear logs when the user closes the tab
+        // Uncomment the line below to enable this feature
+        // window.addEventListener('beforeunload', function() { localStorage.removeItem(sharedLogsKey); });
+    </script>
+</body>
+</html>
