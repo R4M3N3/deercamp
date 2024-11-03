@@ -68,6 +68,26 @@
             background-color: #45a049; /* Darker green on hover */
         }
 
+        /* Log container styling */
+        .log-container {
+            display: none; /* Hidden by default */
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .log-container textarea {
+            width: 100%;
+            height: 100px;
+            padding: 0.5rem;
+            margin-top: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .log-container button {
+            margin-top: 0.5rem;
+        }
+
         /* Footer styling */
         footer {
             background: rgba(51, 51, 51, 0.9); /* Semi-transparent dark color */
@@ -83,12 +103,21 @@
 <body>
     <!-- Sign-in form -->
     <div class="sign-in-container">
-        <h2>Code is bigbucks</h2> <!-- Updated heading -->
+        <h2>Code is bigbucks</h2>
         <form id="signInForm">
             <input type="text" id="codeInput" placeholder="Enter Code" required>
             <button type="submit">Sign In</button>
         </form>
         <p id="message" style="color: red; margin-top: 10px;"></p>
+        
+        <!-- Log container -->
+        <div class="log-container" id="logContainer">
+            <h3>Log Entries</h3>
+            <textarea id="logInput" placeholder="Type your log entry here..."></textarea>
+            <button id="saveLogButton">Save Log Entry</button>
+            <h4>Saved Entries:</h4>
+            <ul id="logList"></ul>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -97,18 +126,50 @@
     </footer>
 
     <script>
+        // Load saved log entries from localStorage
+        window.onload = function() {
+            const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
+            const logList = document.getElementById('logList');
+            savedLogs.forEach(log => {
+                const li = document.createElement('li');
+                li.textContent = log;
+                logList.appendChild(li);
+            });
+        };
+
         document.getElementById('signInForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form submission
             const codeInput = document.getElementById('codeInput').value;
             const message = document.getElementById('message');
+            const logContainer = document.getElementById('logContainer');
 
             // Check if the entered code is correct
             if (codeInput === 'bigbucks') {
                 message.style.color = 'green';
-                message.textContent = 'Access Granted!'; // You can redirect or perform another action here
+                message.textContent = 'Access Granted!';
+                logContainer.style.display = 'block'; // Show log container
             } else {
                 message.style.color = 'red';
                 message.textContent = 'Incorrect Code. Please try again.';
+            }
+        });
+
+        document.getElementById('saveLogButton').addEventListener('click', function() {
+            const logInput = document.getElementById('logInput');
+            const logEntry = logInput.value.trim();
+            const logList = document.getElementById('logList');
+
+            if (logEntry) {
+                const li = document.createElement('li');
+                li.textContent = logEntry;
+                logList.appendChild(li);
+
+                // Save log entries to localStorage
+                const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
+                savedLogs.push(logEntry);
+                localStorage.setItem('logEntries', JSON.stringify(savedLogs));
+
+                logInput.value = ''; // Clear input
             }
         });
     </script>
