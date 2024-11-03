@@ -84,16 +84,33 @@
     <!-- Sign-in form -->
     <div class="sign-in-container">
         <h2>Sign In</h2>
-        <form>
-            <input type="text" placeholder="Username" required>
-            <input type="password" placeholder="Password" required>
+        <form id="signInForm">
+            <input type="text" id="codeInput" placeholder="Enter Code" required>
             <button type="submit">Sign In</button>
         </form>
+        <p id="message" style="color: red; margin-top: 10px;"></p>
     </div>
 
     <!-- Footer -->
     <footer>
         <p>&copy; 2024 Big Bucks. All Rights Reserved.</p>
     </footer>
+
+    <script>
+        document.getElementById('signInForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            const codeInput = document.getElementById('codeInput').value;
+            const message = document.getElementById('message');
+
+            // Check if the entered code is correct
+            if (codeInput === 'bigbucks') {
+                message.style.color = 'green';
+                message.textContent = 'Access Granted!'; // You can redirect or perform another action here
+            } else {
+                message.style.color = 'red';
+                message.textContent = 'Incorrect Code. Please try again.';
+            }
+        });
+    </script>
 </body>
 </html>
