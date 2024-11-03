@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page - Big Bucks</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         /* Basic reset */
         * {
@@ -57,7 +55,6 @@
         }
 
         .log-container button {
-            margin-top: 0.5rem;
             background-color: #4CAF50; /* Green */
             color: white;
             padding: 0.5rem;
@@ -65,16 +62,11 @@
             border-radius: 5px;
             cursor: pointer;
             width: 100%;
+            margin-top: 1rem;
         }
 
         .log-container button:hover {
             background-color: #45a049; /* Darker green on hover */
-        }
-
-        .log-container ul {
-            list-style-type: none; /* Remove bullet points */
-            margin-top: 1rem;
-            text-align: left;
         }
 
         /* Footer styling */
@@ -105,46 +97,32 @@
     </footer>
 
     <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Load saved log entries from Firebase
+        // Load saved log entries from localStorage
         window.onload = function() {
+            const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
             const logList = document.getElementById('logList');
-            const logRef = database.ref('logs');
-
-            // Listen for changes in the database
-            logRef.on('value', (snapshot) => {
-                logList.innerHTML = ''; // Clear existing entries
-                snapshot.forEach((childSnapshot) => {
-                    const logEntry = childSnapshot.val();
-                    const li = document.createElement('li');
-                    li.textContent = logEntry;
-                    logList.appendChild(li);
-                });
+            savedLogs.forEach(log => {
+                const li = document.createElement('li');
+                li.textContent = log;
+                logList.appendChild(li);
             });
         };
 
         document.getElementById('saveLogButton').addEventListener('click', function() {
             const logInput = document.getElementById('logInput');
             const logEntry = logInput.value.trim();
-            const logRef = database.ref('logs');
+            const logList = document.getElementById('logList');
 
             if (logEntry) {
-                // Save log entry to Firebase
-                logRef.push(logEntry); // Add a new log entry to the database
+                const li = document.createElement('li');
+                li.textContent = logEntry;
+                logList.appendChild(li);
+
+                // Save log entries to localStorage
+                const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
+                savedLogs.push(logEntry);
+                localStorage.setItem('logEntries', JSON.stringify(savedLogs));
+
                 logInput.value = ''; // Clear input
             }
         });
