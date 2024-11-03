@@ -72,11 +72,19 @@
         }
 
         /* List item styling for log entries */
-        #logList li {
+        #logList {
+            padding: 0; /* Remove default padding */
             list-style-type: none; /* Remove default list styles */
-            margin: 0.5rem 0; /* Space between entries */
             text-align: left; /* Align text to the left */
+        }
+
+        #logList li {
+            margin: 0.5rem 0; /* Space between entries */
             white-space: normal; /* Allow wrapping */
+            overflow-wrap: break-word; /* Allow breaking words to prevent overflow */
+            display: flex; /* Use flexbox to align items */
+            justify-content: space-between; /* Space between text and trash icon */
+            align-items: center; /* Center items vertically */
         }
 
         /* Footer styling */
