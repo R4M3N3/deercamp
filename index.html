@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page - Big Bucks</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         /* Basic reset */
         * {
@@ -31,8 +33,8 @@
             height: 100vh;
         }
 
-        /* Sign-in form styling */
-        .sign-in-container {
+        /* Log container styling */
+        .log-container {
             background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
             padding: 2rem;
             border-radius: 10px;
@@ -41,38 +43,8 @@
             text-align: center;
         }
 
-        .sign-in-container h2 {
+        .log-container h3 {
             margin-bottom: 1rem;
-        }
-
-        .sign-in-container input {
-            width: 100%;
-            padding: 0.5rem;
-            margin: 0.5rem 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .sign-in-container button {
-            background-color: #4CAF50; /* Green */
-            color: white;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .sign-in-container button:hover {
-            background-color: #45a049; /* Darker green on hover */
-        }
-
-        /* Log container styling */
-        .log-container {
-            display: none; /* Hidden by default */
-            margin-top: 1rem;
-            text-align: left;
         }
 
         .log-container textarea {
@@ -86,6 +58,23 @@
 
         .log-container button {
             margin-top: 0.5rem;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .log-container button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        .log-container ul {
+            list-style-type: none; /* Remove bullet points */
+            margin-top: 1rem;
+            text-align: left;
         }
 
         /* Footer styling */
@@ -101,23 +90,13 @@
     </style>
 </head>
 <body>
-    <!-- Sign-in form -->
-    <div class="sign-in-container">
-        <h2>Code is bigbucks</h2>
-        <form id="signInForm">
-            <input type="text" id="codeInput" placeholder="Enter Code" required>
-            <button type="submit">Sign In</button>
-        </form>
-        <p id="message" style="color: red; margin-top: 10px;"></p>
-        
-        <!-- Log container -->
-        <div class="log-container" id="logContainer">
-            <h3>Log Entries</h3>
-            <textarea id="logInput" placeholder="Type your log entry here..."></textarea>
-            <button id="saveLogButton">Save Log Entry</button>
-            <h4>Saved Entries:</h4>
-            <ul id="logList"></ul>
-        </div>
+    <!-- Log container -->
+    <div class="log-container" id="logContainer">
+        <h3>Log Entries</h3>
+        <textarea id="logInput" placeholder="Type your log entry here..."></textarea>
+        <button id="saveLogButton">Save Log Entry</button>
+        <h4>Saved Entries:</h4>
+        <ul id="logList"></ul>
     </div>
 
     <!-- Footer -->
@@ -126,49 +105,46 @@
     </footer>
 
     <script>
-        // Load saved log entries from localStorage
-        window.onload = function() {
-            const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
-            const logList = document.getElementById('logList');
-            savedLogs.forEach(log => {
-                const li = document.createElement('li');
-                li.textContent = log;
-                logList.appendChild(li);
-            });
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        document.getElementById('signInForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
-            const codeInput = document.getElementById('codeInput').value;
-            const message = document.getElementById('message');
-            const logContainer = document.getElementById('logContainer');
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-            // Check if the entered code is correct
-            if (codeInput === 'bigbucks') {
-                message.style.color = 'green';
-                message.textContent = 'Access Granted!';
-                logContainer.style.display = 'block'; // Show log container
-            } else {
-                message.style.color = 'red';
-                message.textContent = 'Incorrect Code. Please try again.';
-            }
-        });
+        // Load saved log entries from Firebase
+        window.onload = function() {
+            const logList = document.getElementById('logList');
+            const logRef = database.ref('logs');
+
+            // Listen for changes in the database
+            logRef.on('value', (snapshot) => {
+                logList.innerHTML = ''; // Clear existing entries
+                snapshot.forEach((childSnapshot) => {
+                    const logEntry = childSnapshot.val();
+                    const li = document.createElement('li');
+                    li.textContent = logEntry;
+                    logList.appendChild(li);
+                });
+            });
+        };
 
         document.getElementById('saveLogButton').addEventListener('click', function() {
             const logInput = document.getElementById('logInput');
             const logEntry = logInput.value.trim();
-            const logList = document.getElementById('logList');
+            const logRef = database.ref('logs');
 
             if (logEntry) {
-                const li = document.createElement('li');
-                li.textContent = logEntry;
-                logList.appendChild(li);
-
-                // Save log entries to localStorage
-                const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
-                savedLogs.push(logEntry);
-                localStorage.setItem('logEntries', JSON.stringify(savedLogs));
-
+                // Save log entry to Firebase
+                logRef.push(logEntry); // Add a new log entry to the database
                 logInput.value = ''; // Clear input
             }
         });
