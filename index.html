@@ -39,6 +39,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
             width: 300px; /* Fixed width for the form */
             text-align: center;
+            overflow: hidden; /* Prevent overflow from container */
         }
 
         .log-container h3 {
@@ -76,6 +77,8 @@
             padding: 0; /* Remove default padding */
             list-style-type: none; /* Remove default list styles */
             text-align: left; /* Align text to the left */
+            max-height: 200px; /* Set a maximum height */
+            overflow-y: auto; /* Enable scrolling if it exceeds max-height */
         }
 
         #logList li {
