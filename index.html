@@ -79,6 +79,13 @@
             bottom: 0;
             width: 100%;
         }
+
+        /* Trash can icon styling */
+        .trash {
+            cursor: pointer;
+            color: red; /* Color for the trash can icon */
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -102,21 +109,16 @@
             const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
             const logList = document.getElementById('logList');
             savedLogs.forEach(log => {
-                const li = document.createElement('li');
-                li.textContent = log;
-                logList.appendChild(li);
+                addLogEntryToDOM(log);
             });
         };
 
         document.getElementById('saveLogButton').addEventListener('click', function() {
             const logInput = document.getElementById('logInput');
             const logEntry = logInput.value.trim();
-            const logList = document.getElementById('logList');
 
             if (logEntry) {
-                const li = document.createElement('li');
-                li.textContent = logEntry;
-                logList.appendChild(li);
+                addLogEntryToDOM(logEntry);
 
                 // Save log entries to localStorage
                 const savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
@@ -126,6 +128,33 @@
                 logInput.value = ''; // Clear input
             }
         });
+
+        function addLogEntryToDOM(logEntry) {
+            const logList = document.getElementById('logList');
+            const li = document.createElement('li');
+            li.textContent = logEntry;
+
+            // Create trash can icon
+            const trashIcon = document.createElement('span');
+            trashIcon.textContent = '🗑️'; // Trash can emoji
+            trashIcon.className = 'trash';
+            trashIcon.onclick = function() {
+                deleteLogEntry(logEntry, li);
+            };
+
+            li.appendChild(trashIcon);
+            logList.appendChild(li);
+        }
+
+        function deleteLogEntry(logEntry, li) {
+            // Remove log entry from localStorage
+            let savedLogs = JSON.parse(localStorage.getItem('logEntries')) || [];
+            savedLogs = savedLogs.filter(log => log !== logEntry);
+            localStorage.setItem('logEntries', JSON.stringify(savedLogs));
+
+            // Remove the entry from the DOM
+            li.remove();
+        }
     </script>
 </body>
 </html>
