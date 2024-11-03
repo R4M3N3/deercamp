@@ -47,11 +47,13 @@
 
         .log-container textarea {
             width: 100%;
-            height: 100px;
+            height: 100px; /* Fixed height */
             padding: 0.5rem;
             margin-top: 1rem;
             border: 1px solid #ccc;
             border-radius: 5px;
+            overflow-y: auto; /* Allow vertical scroll */
+            resize: none; /* Disable resizing */
         }
 
         .log-container button {
@@ -92,7 +94,7 @@
     <!-- Log container -->
     <div class="log-container" id="logContainer">
         <h3>Log Entries</h3>
-        <textarea id="logInput" placeholder="Type your log entry here..."></textarea>
+        <textarea id="logInput" placeholder="Type your log entry here..." maxlength="500"></textarea>
         <button id="saveLogButton">Save Log Entry</button>
         <h4>Saved Entries:</h4>
         <ul id="logList"></ul>
